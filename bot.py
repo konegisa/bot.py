@@ -6,7 +6,8 @@ import asyncio
 from datetime import timedelta, datetime, timezone
 
 intents = discord.Intents.all()
-bot = commands.Bot(intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents)
+
 
 
 # -------------------------------
@@ -160,6 +161,7 @@ async def on_message(msg):
 # TOKEN
 # -------------------------------
 bot.run(os.getenv("TOKEN"))
+
 
 
 
