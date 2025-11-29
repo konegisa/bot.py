@@ -156,11 +156,15 @@ async def on_message(msg):
         await msg.delete()
         await msg.channel.send(f"{msg.author.mention} küfür yasak!", delete_after=3)
 
+    await bot.process_commands(msg)  # <-- BUNU EKLE
+
+
 
 # -------------------------------
 # TOKEN
 # -------------------------------
 bot.run(os.getenv("TOKEN"))
+
 
 
 
