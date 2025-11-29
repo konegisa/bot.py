@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import asyncio
+import os
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="k!", intents=intents)
@@ -157,5 +157,6 @@ async def on_message(msg):
 # =========================
 # TOKEN
 # =========================
-bot.run("")
+bot.run(os.getenv("TOKEN"))
+
 
