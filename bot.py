@@ -179,7 +179,8 @@ async def on_message(msg):
 # ======================================================
 # TOKEN
 # ======================================================
-bot.run(os.getenv("TOKEN"))
+bot.run(os.getenv("MTQwODIwNDk3NTI4NDE2Mjc0Mg.Ga_VlV.hSNfJV_MN4fUPdZD4zw6I5hiuUTFMp1atCvbug"))
+
 
 
 
