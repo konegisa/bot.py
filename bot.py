@@ -1117,6 +1117,21 @@ async def muzik_panel_guncelle(guild):
 # ŞARKI OYNAT
 # ============================================================
 
+def ses_urlini_al(webpage_url):
+    """YouTube ses URL'sini event loop'u bloklamadan alınabilmesi için senkron çözer."""
+    with yt_dlp.YoutubeDL(YTDLP_OPTIONS) as ydl:
+        info = ydl.extract_info(
+            webpage_url,
+            download=False
+        )
+
+        if info and "entries" in info:
+            entries = info.get("entries") or []
+            info = entries[0] if entries else None
+
+        return info.get("url") if info else None
+
+
 async def sonraki_sarki(guild):
 
     guild_id = guild.id
@@ -1257,29 +1272,13 @@ async def sonraki_sarki(guild):
 
     try:
 
-        with yt_dlp.YoutubeDL(
-            YTDLP_OPTIONS
-        ) as ydl:
-
-            info = ydl.extract_info(
-                current["webpage_url"],
-                download=False
-            )
-
-            if info and "entries" in info:
-
-                entries = info.get(
-                    "entries"
-                )
-
-                if entries:
-                    info = entries[0]
-
-            audio_url = (
-                info.get("url")
-                if info
-                else None
-            )
+        # yt-dlp ağ işlemi senkrondur; doğrudan async fonksiyonda
+        # çalıştırılırsa Discord event loop'unu bloke edip
+        # slash komutlarının 3 saniyelik yanıt süresini aşabilir.
+        audio_url = await asyncio.to_thread(
+            ses_urlini_al,
+            current["webpage_url"]
+        )
 
     except Exception as e:
 
