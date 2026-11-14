@@ -5169,7 +5169,7 @@ def sunucu_kur_izinleri(guild, kind):
                     create_private_threads=False, send_messages_in_threads=False
                 )
         return result
-    return None
+    return {}
 
 
 def sunucu_kur_silinecekler(guild):
@@ -5219,7 +5219,7 @@ async def sunucu_kur_uygula(guild, mode):
             else:
                 await guild.create_text_channel(
                     channel_name, category=cat,
-                    overwrites=sunucu_kur_izinleri(guild, kind) if kind == "locked" else None
+                    overwrites=sunucu_kur_izinleri(guild, kind)
                 )
             made_channels += 1
     return made_cats, made_channels, removed_cats
