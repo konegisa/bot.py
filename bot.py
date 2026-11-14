@@ -16,7 +16,7 @@ from datetime import timedelta, datetime, timezone
 # ENV / AYARLAR
 # ============================================================
 
-BOT_TOKEN = "MTQ1NzA3MzI5OTkzMzc1NzQ5MA.GbFqi-.iHYzBmzbV3QRsqcmSi-gY73X22D0RuclXEl7Is"
+BOT_TOKEN = "MTQ1NzA3MzI5OTkzMzc1NzQ5MA.GnEp22.TZitGy2SDLcC9fNwVcaIBOBkcFLz4FZzCDAr7o"
 
 PREFIX = "!"
 
