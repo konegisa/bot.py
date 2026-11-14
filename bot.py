@@ -66,6 +66,17 @@ for yol in FFMPEG_ADAYLARI:
         FFMPEG_PATH = yol
         break
 
+# Linux hosting ortamlarında imageio-ffmpeg paketinin indirdiği FFmpeg'i kullan.
+# Paket kurulu değilse mevcut Windows/Linux aday yolları kullanılmaya devam eder.
+if not FFMPEG_PATH:
+    try:
+        import imageio_ffmpeg
+        aday_ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+        if aday_ffmpeg and os.path.isfile(aday_ffmpeg):
+            FFMPEG_PATH = aday_ffmpeg
+    except Exception:
+        pass
+
 
 # ============================================================
 # DISCORD
