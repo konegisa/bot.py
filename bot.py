@@ -91,6 +91,33 @@ bot = commands.Bot(
 
 
 # ============================================================
+# OPUS (LINUX HOSTING)
+# ============================================================
+
+# Hostrix gibi root yetkisi olmayan Linux hostinglerde kullanıcı dizinine
+# çıkarılan libopus kütüphanesini bot başlarken yükle.
+OPUS_PATH = os.path.join(
+    HOME,
+    ".local",
+    "lib",
+    "opus",
+    "usr",
+    "lib",
+    "x86_64-linux-gnu",
+    "libopus.so.0"
+)
+
+if os.path.isfile(OPUS_PATH):
+    try:
+        discord.opus.load_opus(OPUS_PATH)
+        print("[OPUS] Linux kütüphanesi yüklendi.")
+    except Exception as e:
+        print("[OPUS] Kütüphane yüklenemedi:", e)
+else:
+    print("[OPUS] Kullanıcı dizininde Linux kütüphanesi bulunamadı; sistem Opus'u kullanılacak.")
+
+
+# ============================================================
 # SQLITE
 # ============================================================
 
