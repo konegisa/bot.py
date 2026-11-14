@@ -5083,6 +5083,235 @@ async def on_app_command_error(
         pass
 
 
+
+# ============================================================
+# /SUNUCU-KUR - GÜVENLİ SUNUCU DÜZENLEME
+# ============================================================
+
+SUNUCU_KUR_YAPISI = [
+    ("🛡️ YÖNETİM MERKEZİ", "staff", [
+        ("text", "⌈💬⌋・mod-sohbet"), ("voice", "⌈🔊⌋・mod-toplantı"),
+        ("text", "⌈🧪⌋・deneme-mod"), ("text", "⌈⚙️⌋・mod-komut"),
+        ("text", "⌈📢⌋・mod-duyuru"), ("text", "⌈💬⌋・mod-chat")]),
+    ("📊 SUNUCU BİLGİLERİ", "locked", [
+        ("text", "⌈📊⌋・sunucu-paneli"), ("text", "⌈👥⌋・üye-sayısı"),
+        ("text", "⌈📜⌋・kurallar"), ("text", "⌈📢⌋・duyurular"),
+        ("text", "⌈🎉⌋・çekilişler"), ("text", "⌈🚀⌋・sunucu-takviye"),
+        ("text", "⌈🎭⌋・rol-al")]),
+    ("💬 GENEL ALAN", "public", [
+        ("text", "⌈💬⌋・genel-sohbet"), ("text", "⌈🤖⌋・bot-komutları"),
+        ("text", "⌈🖼️⌋・galeri"), ("text", "⌈📈⌋・level-up"),
+        ("voice", "⌈🔊⌋・sohbet"), ("voice", "⌈🔊⌋・sohbet-2"),
+        ("voice", "⌈🔊⌋・sohbet-3"), ("voice", "⌈🔊⌋・sohbet-4"),
+        ("voice", "⌈🔊⌋・sohbet-5"), ("voice", "⌈🎵⌋・müzik-1"),
+        ("voice", "⌈🎵⌋・müzik-2"), ("voice", "⌈🎵⌋・müzik-3"),
+        ("voice", "⌈🎵⌋・müzik-4"), ("voice", "⌈🧠⌋・overthink"),
+        ("voice", "⌈💤⌋・afk")]),
+    ("🎮 LEAGUE OF LEGENDS", "public", [
+        ("text", "⌈🔎⌋・lol-duo-bulma")] +
+        [("text", "⌈💬⌋・lol-sohbet-" + str(i)) for i in range(1, 6)]),
+    ("🎯 VALORANT", "public", [
+        ("text", "⌈🔎⌋・valorant-duo-bulma")] +
+        [("text", "⌈💬⌋・valorant-sohbet-" + str(i)) for i in range(1, 6)]),
+    ("⛏️ MINECRAFT", "public", [
+        ("text", "⌈🔎⌋・minecraft-duo-bulma")] +
+        [("text", "⌈💬⌋・minecraft-sohbet-" + str(i)) for i in range(1, 6)]),
+    ("🎉 EĞLENCE", "public", [
+        ("text", "⌈🔢⌋・sayı-sayma"), ("text", "⌈🎯⌋・tuttu-tutmadı"),
+        ("text", "⌈🔤⌋・kelime-türetme")]),
+    ("👋 HOŞ GELDİN", "locked", [
+        ("text", "⌈👋⌋・hoş-geldin"), ("text", "⌈📥⌋・giriş-çıkış")]),
+    ("🤝 PARTNERLİK", "public", [
+        ("text", "⌈🤝⌋・partnerlerimiz"), ("text", "⌈📃⌋・partnerlik-textimiz")]),
+    ("📑 LOG SİSTEMİ", "locked", [
+        ("text", "⌈💬⌋・mesaj-log"), ("text", "⌈👤⌋・üye-log"),
+        ("text", "⌈🎭⌋・rol-log"), ("text", "⌈🗂️⌋・kanal-log"),
+        ("text", "⌈🛡️⌋・yetkili-log"), ("text", "⌈🔊⌋・ses-log")])
+]
+
+SUNUCU_KUR_KORUNAN = ("kural", "rule", "partner", "community", "topluluk")
+
+
+def sunucu_kur_korunan_kategori(category):
+    names = [category.name] + [channel.name for channel in category.channels]
+    return any(word in name.casefold() for name in names for word in SUNUCU_KUR_KORUNAN)
+
+
+def sunucu_kur_izinleri(guild, kind):
+    if kind == "staff":
+        result = {guild.default_role: discord.PermissionOverwrite(view_channel=False)}
+        for name in ("Baba", "+", "Üst Yetkili", "Admin", "Moderatör", "Deneme Moderatör", "Mod Ekibi"):
+            role = discord.utils.get(guild.roles, name=name)
+            if role:
+                result[role] = discord.PermissionOverwrite(
+                    view_channel=True, send_messages=True, read_message_history=True,
+                    connect=True, speak=True
+                )
+        return result
+    if kind == "locked":
+        result = {guild.default_role: discord.PermissionOverwrite(
+            view_channel=True, send_messages=False, add_reactions=False,
+            create_public_threads=False, create_private_threads=False,
+            send_messages_in_threads=False
+        )}
+        for role in guild.roles:
+            if not role.is_default():
+                result[role] = discord.PermissionOverwrite(
+                    view_channel=True, send_messages=False, add_reactions=False,
+                    create_public_threads=False, create_private_threads=False,
+                    send_messages_in_threads=False
+                )
+        for name in ("Baba", "Üst Yetkili"):
+            role = discord.utils.get(guild.roles, name=name)
+            if role:
+                result[role] = discord.PermissionOverwrite(
+                    view_channel=True, send_messages=True, read_message_history=True,
+                    add_reactions=True, create_public_threads=False,
+                    create_private_threads=False, send_messages_in_threads=False
+                )
+        return result
+    return None
+
+
+def sunucu_kur_silinecekler(guild):
+    return [c for c in guild.categories if not sunucu_kur_korunan_kategori(c)]
+
+
+def sunucu_kur_onizleme(guild, mode):
+    lines = []
+    if mode == "reset":
+        lines.append("SİLİNECEK KATEGORİLER VE KANALLARI:")
+        targets = sunucu_kur_silinecekler(guild)
+        for cat in targets:
+            lines.append("- " + cat.name + ": " + (", ".join(ch.name for ch in cat.channels) or "Boş"))
+        if not targets:
+            lines.append("Silinecek kategori bulunamadı.")
+        lines.append("Kurallar, partnerlik ve Community alanları korunur.")
+    else:
+        lines.append("Mevcut kategoriler silinmeyecek; yalnızca eksikler oluşturulacak.")
+    lines.append("")
+    lines.append("OLUŞTURULACAK DÜZEN:")
+    for name, kind, channels in SUNUCU_KUR_YAPISI:
+        lines.append(name)
+        lines.extend(("🔊 " if typ == "voice" else "💬 ") + ch for typ, ch in channels)
+    result = "\n".join(lines)
+    return result[:3900] + "\n… Liste kısaltıldı." if len(result) > 3900 else result
+
+
+async def sunucu_kur_uygula(guild, mode):
+    made_cats = made_channels = removed_cats = 0
+    if mode == "reset":
+        for cat in list(sunucu_kur_silinecekler(guild)):
+            await cat.delete(reason="/sunucu-kur: ikinci onay")
+            removed_cats += 1
+    for name, kind, channels in SUNUCU_KUR_YAPISI:
+        cat = discord.utils.get(guild.categories, name=name)
+        if cat is None:
+            cat = await guild.create_category(
+                name, overwrites=sunucu_kur_izinleri(guild, kind),
+                reason="/sunucu-kur: kategori oluşturma"
+            )
+            made_cats += 1
+        for typ, channel_name in channels:
+            if discord.utils.get(cat.channels, name=channel_name):
+                continue
+            if typ == "voice":
+                await guild.create_voice_channel(channel_name, category=cat)
+            else:
+                await guild.create_text_channel(
+                    channel_name, category=cat,
+                    overwrites=sunucu_kur_izinleri(guild, kind) if kind == "locked" else None
+                )
+            made_channels += 1
+    return made_cats, made_channels, removed_cats
+
+
+class SunucuKurOnayView(discord.ui.View):
+    def __init__(self, mode, owner_id):
+        super().__init__(timeout=180)
+        self.mode, self.owner_id = mode, owner_id
+
+    async def interaction_check(self, interaction):
+        if interaction.user.id != self.owner_id:
+            await interaction.response.send_message("Bu paneli yalnızca başlatan kişi kullanabilir.", ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(label="Onayla ve uygula", emoji="✅", style=discord.ButtonStyle.success)
+    async def confirm(self, interaction, button):
+        if not interaction.guild:
+            await interaction.response.send_message("Sunucu bulunamadı.", ephemeral=True)
+            return
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        try:
+            cats, chans, deleted = await sunucu_kur_uygula(interaction.guild, self.mode)
+            await interaction.followup.send(
+                "Kurulum tamamlandı. Oluşturulan kategori: " + str(cats) +
+                ", oluşturulan kanal: " + str(chans) +
+                ", silinen kategori: " + str(deleted) + ".",
+                ephemeral=True
+            )
+        except discord.Forbidden:
+            await interaction.followup.send("Botun kanal/kategori yönetme izni yok.", ephemeral=True)
+        except Exception as error:
+            print("SUNUCU KUR HATASI:", error)
+            await interaction.followup.send("Hata oluştu; ayrıntı konsola yazıldı. Kısmi değişiklikler olabilir.", ephemeral=True)
+        self.stop()
+
+    @discord.ui.button(label="İptal", emoji="❌", style=discord.ButtonStyle.danger)
+    async def cancel(self, interaction, button):
+        await interaction.response.edit_message(content="İptal edildi; değişiklik yapılmadı.", embed=None, view=None)
+        self.stop()
+
+
+class SunucuKurSecimView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=180)
+
+    @discord.ui.select(
+        placeholder="Kurulum türünü seç...", min_values=1, max_values=1,
+        options=[
+            discord.SelectOption(label="Komple sunucu düzeni", value="complete"),
+            discord.SelectOption(label="Kategorileri sıfırla", value="reset"),
+            discord.SelectOption(label="Kategorileri değiştir", value="modify")
+        ]
+    )
+    async def select_mode(self, interaction, select):
+        mode = select.values[0]
+        embed = discord.Embed(
+            title="💜 VELORIA — KURULUM ÖNİZLEMESİ",
+            description=sunucu_kur_onizleme(interaction.guild, mode),
+            color=PURPLE
+        )
+        embed.set_footer(text="İkinci onay olmadan hiçbir işlem yapılmaz.")
+        await interaction.response.edit_message(
+            content="Etkilenecek alanları kontrol et:", embed=embed,
+            view=SunucuKurOnayView(mode, interaction.user.id)
+        )
+
+
+@bot.tree.command(name="sunucu-kur", description="Veloria sunucusunun kanal düzenini güvenli şekilde oluşturur.")
+async def sunucu_kur(interaction: discord.Interaction):
+    guild = interaction.guild
+    if not guild:
+        await interaction.response.send_message("Bu komut yalnızca sunucuda kullanılabilir.", ephemeral=True)
+        return
+    baba = discord.utils.get(guild.roles, name="Baba")
+    ust = discord.utils.get(guild.roles, name="Üst Yetkili")
+    roles = getattr(interaction.user, "roles", [])
+    if not any(role and role in roles for role in (baba, ust)):
+        await interaction.response.send_message("Bu komutu yalnızca Baba veya Üst Yetkili kullanabilir.", ephemeral=True)
+        return
+    if not guild.me.guild_permissions.manage_channels:
+        await interaction.response.send_message("Botta Kanalları Yönet izni bulunmuyor.", ephemeral=True)
+        return
+    await interaction.response.send_message(
+        "💜 VELORIA SUNUCU KURULUMU\nİşlem türünü seç. Önce etkilenecek alanları göstereceğim; ikinci onayından önce değişiklik yapılmayacak.",
+        view=SunucuKurSecimView(), ephemeral=True
+    )
+
+
+
 # ============================================================
 # READY
 # ============================================================
