@@ -16,7 +16,7 @@ from datetime import timedelta, datetime, timezone
 # ENV / AYARLAR
 # ============================================================
 
-BOT_TOKEN = "MTQ1NzA3MzI5OTkzMzc1NzQ5MA.GnEp22.TZitGy2SDLcC9fNwVcaIBOBkcFLz4FZzCDAr7o"
+BOT_TOKEN = "MTQ1NzA3MzI5OTkzMzc1NzQ5MA.GN3PRI.qxMSJTh76Emhnajy0QGB7YhkrbVV7A3vvqRShA"
 
 PREFIX = "!"
 
@@ -5438,4 +5438,3 @@ async def on_ready():
 
 if __name__ == "__main__":
     bot.run(BOT_TOKEN)
-
