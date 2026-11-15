@@ -2,7 +2,12 @@ from dotenv import load_dotenv
 import os
 
 print("[ENV TEST] .env yükleme:", load_dotenv("/home/container/.env"))
-print("[ENV TEST] DISCORD_TOKEN bulundu:", bool(os.getenv("DISCORD_TOKEN")))
+BOT_TOKEN = os.getenv("DISCORD_TOKEN")
+print("[ENV TEST] DISCORD_TOKEN bulundu:", bool(BOT_TOKEN))
+
+if not BOT_TOKEN:
+    raise RuntimeError("DISCORD_TOKEN ortam değişkeni ayarlanmamış!")
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -20,11 +25,6 @@ from datetime import timedelta, datetime, timezone
 # ============================================================
 # ENV / AYARLAR
 # ============================================================
-
-BOT_TOKEN = os.getenv("DISCORD_TOKEN")
-
-if not BOT_TOKEN:
-    raise RuntimeError("DISCORD_TOKEN ortam değişkeni ayarlanmamış!")
 
 PREFIX = "!"
 
