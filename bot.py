@@ -21,7 +21,7 @@ from datetime import timedelta, datetime, timezone
 # ENV / AYARLAR
 # ============================================================
 
-BOT_TOKEN = os.getenv("MTQ1NzA3MzI5OTkzMzc1NzQ5MA.GN3PRI.qxMSJTh76Emhnajy0QGB7YhkrbVV7A3vvqRShA")
+BOT_TOKEN = os.getenv("DISCORD_TOKEN")
 
 if not BOT_TOKEN:
     raise RuntimeError("DISCORD_TOKEN ortam değişkeni ayarlanmamış!")
