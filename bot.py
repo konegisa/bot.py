@@ -612,7 +612,14 @@ YTDLP_OPTIONS = {
     "quiet": True,
     "no_warnings": True,
     "default_search": "ytsearch",
-    "source_address": "0.0.0.0"
+    "source_address": "0.0.0.0",
+    # YouTube'un sunucu isteklerine uyguladığı bot kontrolünde
+    # farklı bir oynatıcı istemcisi kullan.
+    "extractor_args": {
+        "youtube": {
+            "player_client": ["tv"]
+        }
+    }
 }
 
 
